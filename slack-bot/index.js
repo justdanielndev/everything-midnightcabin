@@ -338,11 +338,38 @@ app.command('/team', async ({ command, ack, respond }) => {
   }
 });
 
+app.command('/mc-stats', async ({ ack, respond }) => {
+  await ack();
+  
+  try {
+    const allMembers = await queryNotionDatabase(databaseIds.members);
+    const allProjects = await queryNotionDatabase(databaseIds.projects);
+    
+    const totalUsers = allMembers.length;
+    const totalProjects = allProjects.length;
+    
+    let goalMessage;
+    if (totalUsers >= 200) {
+      goalMessage = "User goal reached! Amazing work everyone! :partying_face:";
+    } else {
+      const usersToGo = 200 - totalUsers;
+      goalMessage = `${usersToGo} to go towards our goal of 200 users! :rocket:`;
+    }
+    
+    await respond({
+      text: `*Midnight Cabin Statistics*\n\n:yay: *Total Users:* ${totalUsers}\n:wrench: *Total Projects:* ${totalProjects}\n\n${goalMessage}`
+    });
+  } catch (error) {
+    console.error('Error in /mc-stats command:', error);
+    await respond({ text: 'Sorry, there was an error retrieving statistics.' });
+  }
+});
+
 app.command('/mc-help', async ({ ack, respond }) => {
   await ack();
   
   await respond({
-    text: `*Midnight Cabin Bot Help*\n\n*Available Commands:*\n\n• \`/experience\` - Shows your experience points and level\n• \`/user\` - Shows info about you\n• \`/projects\` - Shows your projects\n• \`/team\` - Shows info about your team\n• \`/mc-help\` - Shows this help message :D`
+    text: `*Midnight Cabin Bot Help*\n\n*Available Commands:*\n\n• \`/experience\` - Shows your experience points and level\n• \`/user\` - Shows info about you\n• \`/projects\` - Shows your projects\n• \`/team\` - Shows info about your team\n• \`/mc-stats\` - Shows total users and projects\n• \`/mc-help\` - Shows this help message :D`
   });
 });
 
