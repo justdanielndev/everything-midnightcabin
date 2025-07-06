@@ -38,6 +38,7 @@ pnpm start
 - `/team` - Shows info about your team
 - `/mc-help` - Show all available commands
 - `/mc-stats` - Shows project and user count
+- `/mc-ping` - Tests the bot's responsiveness
 
 ## Database Schemas
 
