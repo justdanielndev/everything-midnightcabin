@@ -197,7 +197,7 @@ app.command('/user', async ({ command, ack, respond }) => {
       }
       
       await respond({
-        text: `*Your Midnight Cabin Profile*\n\n:yay: *Slack Name:* ${user.slackName}\n:lego_goldcoin: *Experience:* ${user.xp} XP\n:handshake-ani: *Team:* ${teamInfo}`
+        text: `*Your Profile*\n\n:yay: *Slack Name:* ${user.slackName}\n:lego_goldcoin: *Experience:* ${user.xp} XP\n:handshake-ani: *Team:* ${teamInfo}`
       });
     } else {
       await respond({
@@ -251,7 +251,7 @@ app.command('/projects', async ({ command, ack, respond }) => {
       const teamName = userTeam ? formatTeamData(userTeam).name : user.teamId;
       
       await respond({
-        text: `*Your Midnight Cabin Projects (Team ${teamName})*\n\n${projectList}`
+        text: `*Your Projects (Team ${teamName})*\n\n${projectList}`
       });
     } else {
       await respond({
@@ -329,7 +329,7 @@ app.command('/team', async ({ command, ack, respond }) => {
     }).join('\n');
     
     await respond({
-      text: `*Your Midnight Cabin Team*\n\n${teamInfo}*Members:*\n${membersList || 'No members found'}\n\n*Projects:*\n${projectsList || 'No projects found'}`
+      text: `*Your Team*\n\n${teamInfo}*Members:*\n${membersList || 'No members found'}\n\n*Projects:*\n${projectsList || 'No projects found'}`
     });
     
   } catch (error) {
@@ -357,7 +357,7 @@ app.command('/mc-stats', async ({ ack, respond }) => {
     }
     
     await respond({
-      text: `*Midnight Cabin Statistics*\n\n:yay: *Total Users:* ${totalUsers}\n:wrench: *Total Projects:* ${totalProjects}\n\n${goalMessage}`
+      text: `*Statistics*\n\n:yay: *Total Users:* ${totalUsers}\n:wrench: *Total Projects:* ${totalProjects}\n\n${goalMessage}`
     });
   } catch (error) {
     console.error('Error in /mc-stats command:', error);
@@ -369,11 +369,19 @@ app.command('/mc-help', async ({ ack, respond }) => {
   await ack();
   
   await respond({
-    text: `*Midnight Cabin Bot Help*\n\n*Available Commands:*\n\n• \`/experience\` - Shows your experience points and level\n• \`/user\` - Shows info about you\n• \`/projects\` - Shows your projects\n• \`/team\` - Shows info about your team\n• \`/mc-stats\` - Shows total users and projects\n• \`/mc-help\` - Shows this help message :D`
+    text: `*Midnight Cabin Bot Help*\n\n*Available Commands:*\n\n• \`/experience\` - Shows your experience points and level\n• \`/user\` - Shows info about you\n• \`/projects\` - Shows your projects\n• \`/team\` - Shows info about your team\n• \`/mc-stats\` - Shows total users and projects\n• \`/mc-help\` - Shows this help message :D\n• \`/mc-ping\` - Kindly asks the bot to reply with Pong and the time taken to respond with that.\n\nHave any questions? Check out our help center at https://help.midnightcabin.tech/en (you can also chat with us there!) or email help@midnightcabin.tech.`
   });
+});
+
+app.command('/mc-ping', async ({ ack, respond }) => {
+  await ack();
+  const startTime = Date.now();
+  await respond({ text: 'Pong! 🏓' });
+  const endTime = Date.now();
+  await respond({ text: `Response took ${endTime - startTime}ms :D` });
 });
 
 (async () => {
   await app.start();
-  console.log('Running!');
+  console.log('[INFO] Midnight Cabin Bot :3 - The bot is running! People can now run commands.');
 })();
