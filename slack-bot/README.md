@@ -37,6 +37,7 @@ pnpm start
 - `/projects` - Lists your team's projects
 - `/team` - Shows info about your team
 - `/mc-help` - Show all available commands
+- `/mc-stats` - Shows project and user count
 
 ## Database Schemas
 
