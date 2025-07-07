@@ -247,6 +247,14 @@ async function rejectProject(projectId, reason) {
   }
 }
 
+async function getPendingProjects() {
+  const projects = await queryNotionDatabase(databaseIds.projects);
+  return projects.filter(page => {
+    const project = formatProjectData(page);
+    return project.status === 'Submitted';
+  }).map(page => formatProjectData(page));
+}
+
 app.command('/experience', async ({ command, ack, respond }) => {
   await ack();
 
@@ -629,7 +637,28 @@ app.command('/adm-mc-rejectproject', async ({ ack, respond, command }) => {
   await respond({ text: `Project ${projectId} has been rejected for the following reason: ${reason}` });
 });
 
+app.command('/adm-mc-viewpendingprojects', async ({ ack, respond, command }) => {
+  await ack();
+
+  const userId = command.user_id;
+
+  if (!admins.includes(userId)) {
+    await respond({ text: 'You are not authorized to use this command.' });
+    return;
+  }
+
+  const pendingProjects = await getPendingProjects();
+  if (!pendingProjects || pendingProjects.length === 0) {
+    await respond({ text: 'No pending projects found.' });
+    return;
+  }
+
+  const projectList = pendingProjects.map(project => `• ${project.name} (ID: ${project.id}) - Team: ${project.teamId}`).join('\n');
+  await respond({ text: `Pending Projects:\n${projectList}` });
+});
+
 (async () => {
   await app.start();
-  console.log('[INFO] Midnight Cabin Bot :3 - The bot is running! People can now run commands.');
+  console.log('[INFO] Midnight Cabin Bot :D - The bot is running! People can now run commands.');
+  require('./discord.js');
 })();
