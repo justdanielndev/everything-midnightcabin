@@ -10,13 +10,25 @@ pnpm install
 cp .env.example .env
 ```
 
-3. Set up your Notion integration:
+3. Set up your Slack app:
+   - Go to https://api.slack.com/apps
+   - Click "Create New App"
+   - Follow the prompts to create your app
+   - Set up the app PFP, scopes... and add it to your workspace
+
+4. Set up your Discord bot:
+   - Go to https://discord.com/developers/applications
+   - Click "New Application"
+   - Follow the prompts to create your application
+   - Once your application is created enable the intents, get the bot token and add it to your server/account
+
+5. Set up your Notion integration:
    - Go to https://www.notion.so/my-integrations
    - Create a new integration and copy the "Internal Integration Token"
    - Add the integration to your databases (Share > Add people > Select your integration)
    - Copy the database IDs from the URLs (the 32-character string after the last slash)
 
-4. Add your credentials to `.env`:
+6. Add your credentials to `.env`:
    - `SLACK_BOT_TOKEN`: Your bot token
    - `SLACK_SIGNING_SECRET`: Your app's signing secret
    - `SLACK_APP_TOKEN`: Your app token
@@ -24,13 +36,14 @@ cp .env.example .env
    - `NOTION_MEMBERS_DB_ID`: Your Members database ID
    - `NOTION_PROJECTS_DB_ID`: Your Projects database ID
    - `NOTION_TEAMS_DB_ID`: Your Teams database ID
+   - `DISCORD_BOT_TOKEN`: Your Discord bot token
 
-5. Run the bot:
+7. Run the bot:
 ```bash
 pnpm start
 ```
 
-## Commands
+## Slack Commands
 
 - `/user` - Shows info about you as a Midnight Cabin user
 - `/experience` - Shows your experience points and level
@@ -44,13 +57,21 @@ pnpm start
 - `/adm-mc-ban [user ID] [reason]` - Bans a user
 - `/adm-mc-unban [user ID]` - Unbans a user
 
+## Discord Commands
+
+- `/viewpendingprojects` - Views all pending projects
+- `/approveproject [project ID]` - Approves a project
+- `/rejectproject [project ID] [reason]` - Rejects a project
+- `/banuser [user ID] [reason]` - Bans a user
+- `/unbanuser [user ID]` - Unbans a user
+
 ## Database Schemas
 
 ### Members
-- Name, Email Address, Phone Number, Birthday, Slack ID, Slack Name, Experience Points, Team ID
+- Name, Email Address, Phone Number, Birthday, Slack ID, Slack Name, Experience Points, Team ID, Banned, Ban Reason
 
 ### Projects
-- Name, Description, Team ID, Git Repo, Date Submitted, Status, Hackatime Hours
+- Name, Description, Team ID, Git Repo, Date Submitted, Status, Hackatime Hours, Rejection Reason, Project ID
 
 ### Teams
 - Team Name, Team Size, Members (JSON), Team ID, Projects (JSON)
