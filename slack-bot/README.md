@@ -29,7 +29,7 @@ cp .env.example .env
    - Add the integration to your databases (Share > Add people > Select your integration)
    - Copy the database IDs from the URLs (the 32-character string after the last slash)
 
-6. Add your credentials to `.env` (you can copy the `.env.example` file and replace the values):
+6. Add your credentials to `.env`:
    - `SLACK_BOT_TOKEN`: Your bot token
    - `SLACK_SIGNING_SECRET`: Your app's signing secret
    - `SLACK_APP_TOKEN`: Your app token
