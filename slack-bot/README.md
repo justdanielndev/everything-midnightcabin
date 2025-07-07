@@ -39,6 +39,10 @@ pnpm start
 - `/mc-help` - Show all available commands
 - `/mc-stats` - Shows project and user count
 - `/mc-ping` - Tests the bot's responsiveness
+- `/adm-mc-approveproject [project ID]` - Approves a project
+- `/adm-mc-rejectproject [project ID] [reason]` - Rejects a project
+- `/adm-mc-ban [user ID] [reason]` - Bans a user
+- `/adm-mc-unban [user ID]` - Unbans a user
 
 ## Database Schemas
 
