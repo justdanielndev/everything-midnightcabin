@@ -659,6 +659,6 @@ app.command('/adm-mc-viewpendingprojects', async ({ ack, respond, command }) => 
 
 (async () => {
   await app.start();
-  console.log('[INFO] Midnight Cabin Bot :D - The bot is running! People can now run commands.');
+  console.log('[INFO] Midnight Cabin Bot (Slack) :D - The bot is running! People can now run commands.');
   require('./discord.js');
 })();
