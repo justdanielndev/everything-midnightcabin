@@ -15,12 +15,13 @@ cp .env.example .env
    - Click "Create New App"
    - Follow the prompts to create your app
    - Set up the app PFP, scopes... and add it to your workspace
+   - Make sure to enable socket mode!
 
 4. Set up your Discord bot:
    - Go to https://discord.com/developers/applications
    - Click "New Application"
    - Follow the prompts to create your application
-   - Once your application is created enable the intents, get the bot token and add it to your server/account
+   - Set up the app's PFP, enable the bot and set up its PFP too, enable the Message Content Intent, get the bot token and add it to your workspace
 
 5. Set up your Notion integration:
    - Go to https://www.notion.so/my-integrations
@@ -28,7 +29,7 @@ cp .env.example .env
    - Add the integration to your databases (Share > Add people > Select your integration)
    - Copy the database IDs from the URLs (the 32-character string after the last slash)
 
-6. Add your credentials to `.env`:
+6. Add your credentials to `.env` (you can copy the `.env.example` file and replace the values):
    - `SLACK_BOT_TOKEN`: Your bot token
    - `SLACK_SIGNING_SECRET`: Your app's signing secret
    - `SLACK_APP_TOKEN`: Your app token
