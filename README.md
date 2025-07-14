@@ -5,3 +5,4 @@ All public Midnight Cabin code (bots, website, db...) and other content (brandin
 ## Current Items
 
 * Slack and Discord bot
+* Event Manager site for members during the event
