@@ -4,12 +4,14 @@ import { SignOutButton } from '@/components/signout-button';
 import { MobileMenu } from '@/components/mobile-menu';
 import { Home, Newspaper, Calendar, User, Trophy, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { useSettings } from '@/hooks/use-settings';
 
 interface TopNavProps {
   currentPage?: 'dashboard' | 'news' | 'events' | 'store' | 'profile' | 'leaderboard';
 }
 
 export function TopNav({ currentPage = 'dashboard' }: TopNavProps) {
+  const { settings, loading } = useSettings();
   const isActive = (page: string) => currentPage === page;
 
   return (
@@ -39,33 +41,73 @@ export function TopNav({ currentPage = 'dashboard' }: TopNavProps) {
               <Home className="w-4 h-4" />
               <span>Home</span>
             </a>
-            <Link 
-              href="/news" 
-              className={`flex items-center space-x-2 font-medium transition-colors ${
-                isActive('news') ? 'text-white' : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <Newspaper className="w-4 h-4" />
-              <span>News</span>
-            </Link>
-            <Link 
-              href="/events" 
-              className={`flex items-center space-x-2 font-medium transition-colors ${
-                isActive('events') ? 'text-white' : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <Calendar className="w-4 h-4" />
-              <span>Events</span>
-            </Link>
-            <a 
-              href="/store" 
-              className={`flex items-center space-x-2 font-medium transition-colors ${
-                isActive('store') ? 'text-white' : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Store</span>
-            </a>
+            {loading ? (
+              <>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-zinc-400 rounded animate-pulse"></div>
+                  <div className="w-12 h-4 bg-zinc-400 rounded animate-pulse"></div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-zinc-400 rounded animate-pulse"></div>
+                  <div className="w-14 h-4 bg-zinc-400 rounded animate-pulse"></div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-zinc-400 rounded animate-pulse"></div>
+                  <div className="w-10 h-4 bg-zinc-400 rounded animate-pulse"></div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-zinc-400 rounded animate-pulse"></div>
+                  <div className="w-20 h-4 bg-zinc-400 rounded animate-pulse"></div>
+                </div>
+              </>
+            ) : (
+              <>
+                {settings.NewsEnabled && (
+                  <Link 
+                    href="/news" 
+                    className={`flex items-center space-x-2 font-medium transition-colors ${
+                      isActive('news') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Newspaper className="w-4 h-4" />
+                    <span>News</span>
+                  </Link>
+                )}
+                {settings.EventsEnabled && (
+                  <Link 
+                    href="/events" 
+                    className={`flex items-center space-x-2 font-medium transition-colors ${
+                      isActive('events') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span>Events</span>
+                  </Link>
+                )}
+                {settings.StoreEnabled && (
+                  <a 
+                    href="/store" 
+                    className={`flex items-center space-x-2 font-medium transition-colors ${
+                      isActive('store') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Store</span>
+                  </a>
+                )}
+                {settings.LeaderboardEnabled && (
+                  <a 
+                    href="/leaderboard" 
+                    className={`flex items-center space-x-2 font-medium transition-colors ${
+                      isActive('leaderboard') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Trophy className="w-4 h-4" />
+                    <span>Leaderboard</span>
+                  </a>
+                )}
+              </>
+            )}
             <a 
               href="/profile" 
               className={`flex items-center space-x-2 font-medium transition-colors ${
@@ -74,15 +116,6 @@ export function TopNav({ currentPage = 'dashboard' }: TopNavProps) {
             >
               <User className="w-4 h-4" />
               <span>Profile</span>
-            </a>
-            <a 
-              href="/leaderboard" 
-              className={`flex items-center space-x-2 font-medium transition-colors ${
-                isActive('leaderboard') ? 'text-white' : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <Trophy className="w-4 h-4" />
-              <span>Leaderboard</span>
             </a>
           </nav>
           

@@ -1,4 +1,5 @@
 import { SlackLoginButton } from "@/components/slack-login-button";
+import { InviteCodeLogin } from "@/components/invite-code-login";
 import { AlertCircle } from "lucide-react";
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -76,6 +77,8 @@ export default async function Home({
                   <p className="text-sm text-red-400">{getErrorMessage(error)}</p>
                 </div>
               )}
+              
+              <InviteCodeLogin />
               
               <SlackLoginButton />
               

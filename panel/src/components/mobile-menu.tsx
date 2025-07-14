@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Menu, X, Home, Newspaper, Calendar, User, Trophy, ShoppingBag } from 'lucide-react';
 import { SignOutButton } from './signout-button';
+import { useSettings } from '@/hooks/use-settings';
 import Link from 'next/link';
 
 interface MobileMenuProps {
@@ -11,6 +12,7 @@ interface MobileMenuProps {
 
 export function MobileMenu({ currentPage = 'dashboard' }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { settings, loading } = useSettings();
   
   const isActive = (page: string) => currentPage === page;
 
@@ -62,35 +64,66 @@ export function MobileMenu({ currentPage = 'dashboard' }: MobileMenuProps) {
                   <Home className="w-6 h-6" />
                   <span>Home</span>
                 </a>
-                <Link href="/news" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
-                  isActive('news') ? 'text-white' : 'text-zinc-400 hover:text-white'
-                }`} onClick={() => setIsOpen(false)}>
-                  <Newspaper className="w-6 h-6" />
-                  <span>News</span>
-                </Link>
-                <Link href="/events" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
-                  isActive('events') ? 'text-white' : 'text-zinc-400 hover:text-white'
-                }`} onClick={() => setIsOpen(false)}>
-                  <Calendar className="w-6 h-6" />
-                  <span>Events</span>
-                </Link>
-                <a href="/store" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
-                  isActive('store') ? 'text-white' : 'text-zinc-400 hover:text-white'
-                }`} onClick={() => setIsOpen(false)}>
-                  <ShoppingBag className="w-6 h-6" />
-                  <span>Store</span>
-                </a>
+                {loading ? (
+                  <>
+                    <div className="flex items-center justify-center space-x-4 py-6">
+                      <div className="w-6 h-6 bg-zinc-400 rounded animate-pulse"></div>
+                      <div className="w-16 h-6 bg-zinc-400 rounded animate-pulse"></div>
+                    </div>
+                    <div className="flex items-center justify-center space-x-4 py-6">
+                      <div className="w-6 h-6 bg-zinc-400 rounded animate-pulse"></div>
+                      <div className="w-20 h-6 bg-zinc-400 rounded animate-pulse"></div>
+                    </div>
+                    <div className="flex items-center justify-center space-x-4 py-6">
+                      <div className="w-6 h-6 bg-zinc-400 rounded animate-pulse"></div>
+                      <div className="w-14 h-6 bg-zinc-400 rounded animate-pulse"></div>
+                    </div>
+                    <div className="flex items-center justify-center space-x-4 py-6">
+                      <div className="w-6 h-6 bg-zinc-400 rounded animate-pulse"></div>
+                      <div className="w-24 h-6 bg-zinc-400 rounded animate-pulse"></div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {settings.NewsEnabled && (
+                      <Link href="/news" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
+                        isActive('news') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                      }`} onClick={() => setIsOpen(false)}>
+                        <Newspaper className="w-6 h-6" />
+                        <span>News</span>
+                      </Link>
+                    )}
+                    {settings.EventsEnabled && (
+                      <Link href="/events" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
+                        isActive('events') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                      }`} onClick={() => setIsOpen(false)}>
+                        <Calendar className="w-6 h-6" />
+                        <span>Events</span>
+                      </Link>
+                    )}
+                    {settings.StoreEnabled && (
+                      <a href="/store" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
+                        isActive('store') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                      }`} onClick={() => setIsOpen(false)}>
+                        <ShoppingBag className="w-6 h-6" />
+                        <span>Store</span>
+                      </a>
+                    )}
+                    {settings.LeaderboardEnabled && (
+                      <a href="/leaderboard" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
+                        isActive('leaderboard') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                      }`} onClick={() => setIsOpen(false)}>
+                        <Trophy className="w-6 h-6" />
+                        <span>Leaderboard</span>
+                      </a>
+                    )}
+                  </>
+                )}
                 <a href="/profile" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
                   isActive('profile') ? 'text-white' : 'text-zinc-400 hover:text-white'
                 }`} onClick={() => setIsOpen(false)}>
                   <User className="w-6 h-6" />
                   <span>Profile</span>
-                </a>
-                <a href="/leaderboard" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
-                  isActive('leaderboard') ? 'text-white' : 'text-zinc-400 hover:text-white'
-                }`} onClick={() => setIsOpen(false)}>
-                  <Trophy className="w-6 h-6" />
-                  <span>Leaderboard</span>
                 </a>
               </nav>
               

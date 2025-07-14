@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Newspaper, User, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { TopNav } from '@/components/top-nav';
+import { SettingsGuard } from '@/components/settings-guard';
 
 interface NewsItem {
   id: string;
@@ -48,11 +49,12 @@ export default function NewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(125,130,184,0.1)_1px,transparent_0)] bg-[length:50px_50px]"></div>
-      
-      <div className="relative z-10">
-        <TopNav currentPage="news" />
+    <SettingsGuard requiredSetting="NewsEnabled">
+      <div className="min-h-screen bg-zinc-950">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(125,130,184,0.1)_1px,transparent_0)] bg-[length:50px_50px]"></div>
+        
+        <div className="relative z-10">
+          <TopNav currentPage="news" />
         
         <div className="container mx-auto px-6 -mt-16">
           {loading ? (
@@ -105,6 +107,7 @@ export default function NewsPage() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </SettingsGuard>
   );
 }

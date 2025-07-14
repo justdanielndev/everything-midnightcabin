@@ -51,7 +51,7 @@ async function findUserBySlackId(slackUserId: string) {
   
   if (members.results.length > 0) {
     const member = members.results[0];
-    // @ts-expect-error - error expected :3 - Notion API response typing is complex
+    // @ts-expect-error - error expected :3
     const props = member.properties;
     return {
       id: member.id,

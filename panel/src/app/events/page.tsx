@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, Users, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { TopNav } from '@/components/top-nav';
+import { SettingsGuard } from '@/components/settings-guard';
 
 interface EventItem {
   id: string;
@@ -57,11 +58,12 @@ export default function EventsPage() {
   const groupedEvents = groupEventsByDay();
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(125,130,184,0.1)_1px,transparent_0)] bg-[length:50px_50px]"></div>
-      
-      <div className="relative z-10">
-        <TopNav currentPage="events" />
+    <SettingsGuard requiredSetting="EventsEnabled">
+      <div className="min-h-screen bg-zinc-950">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(125,130,184,0.1)_1px,transparent_0)] bg-[length:50px_50px]"></div>
+        
+        <div className="relative z-10">
+          <TopNav currentPage="events" />
         
         <div className="container mx-auto px-6 -mt-16">
           {loading ? (
@@ -155,6 +157,7 @@ export default function EventsPage() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </SettingsGuard>
   );
 }

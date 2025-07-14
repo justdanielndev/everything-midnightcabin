@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { TopNav } from '@/components/top-nav';
 import { Trophy, Users, TrendingUp } from 'lucide-react';
+import { SettingsGuard } from '@/components/settings-guard';
 
 interface LeaderboardUser {
   id: string;
@@ -99,11 +100,12 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(125,130,184,0.1)_1px,transparent_0)] bg-[length:50px_50px]"></div>
-      
-      <div className="relative z-10">
-        <TopNav currentPage="leaderboard" />
+    <SettingsGuard requiredSetting="LeaderboardEnabled">
+      <div className="min-h-screen bg-zinc-950">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(125,130,184,0.1)_1px,transparent_0)] bg-[length:50px_50px]"></div>
+        
+        <div className="relative z-10">
+          <TopNav currentPage="leaderboard" />
         
         <div className="container mx-auto px-6 -mt-16">
           <div className="max-w-6xl mx-auto">
@@ -193,6 +195,7 @@ export default function LeaderboardPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </SettingsGuard>
   );
 }
