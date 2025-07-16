@@ -118,7 +118,7 @@ export function TopNav({ currentPage = 'dashboard' }: TopNavProps) {
                   </a>
                 )}
                 {settings.ProjectsEnabled && (
-                  <a 
+                  <Link 
                     href="/projects" 
                     className={`flex items-center space-x-2 font-medium transition-colors ${
                       isActive('projects') ? 'text-white' : 'text-zinc-400 hover:text-white'
@@ -126,7 +126,7 @@ export function TopNav({ currentPage = 'dashboard' }: TopNavProps) {
                   >
                     <FolderOpen className="w-4 h-4" />
                     <span>Projects</span>
-                  </a>
+                  </Link>
                 )}
               </>
             )}

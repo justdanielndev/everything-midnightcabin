@@ -8,16 +8,25 @@ const notion = new Client({
 
 const projectsDbId = process.env.NOTION_PROJECTS_DB_ID!;
 const teamsDbId = process.env.NOTION_TEAMS_DB_ID!;
-const membersDbId = process.env.NOTION_MEMBERS_DB_ID!;
 
-function extractPropertyValue(property: any) {
+type NotionProperty = {
+  type: string;
+  title?: { plain_text: string }[];
+  rich_text?: { plain_text: string }[];
+  select?: { name: string };
+  number?: number;
+  date?: { start: string };
+  url?: string;
+};
+
+function extractPropertyValue(property: NotionProperty) {
   if (!property) return '';
 
   switch (property.type) {
     case 'title':
-      return property.title?.map((t: any) => t.plain_text).join('') || '';
+      return property.title?.map((t) => t.plain_text).join('') || '';
     case 'rich_text':
-      return property.rich_text?.map((t: any) => t.plain_text).join('') || '';
+      return property.rich_text?.map((t) => t.plain_text).join('') || '';
     case 'select':
       return property.select?.name || '';
     case 'number':
@@ -73,9 +82,9 @@ async function getTeamMembers(teamId: string) {
     });
     
     if (response.results.length > 0) {
-      const team = response.results[0];
-      // @ts-expect-error - error expected :3
-      const membersJson = team.properties['Members (JSON)']?.rich_text?.[0]?.plain_text || '[]';
+      const team = response.results[0] as { properties: Record<string, NotionProperty> };
+      const membersProperty = team.properties['Members (JSON)'];
+      const membersJson = membersProperty?.rich_text?.[0]?.plain_text || '[]';
       try {
         return JSON.parse(membersJson);
       } catch (error) {
@@ -116,10 +125,10 @@ export async function GET() {
       const status = extractPropertyValue(projectProps['Status']);
       const teamId = extractPropertyValue(projectProps['Team ID']);
       const dateSubmitted = extractPropertyValue(projectProps['Date Submitted']);
-      const hackatimeHours = extractPropertyValue(projectProps['Hackatime Hours']);
       
-      // Get team name and members
+      // @ts-expect-error - error expected :3
       const teamName = await getTeamName(teamId);
+      // @ts-expect-error - error expected :3
       const members = await getTeamMembers(teamId);
 
       allProjects.push({
@@ -129,7 +138,7 @@ export async function GET() {
         status: status,
         teamId: teamId,
         teamName: teamName,
-        members: members.map((m: any) => m.name || m.slackName),
+        members: members.map((m: { name?: string; slackName?: string }) => m.name || m.slackName),
         createdAt: dateSubmitted,
         updatedAt: dateSubmitted
       });

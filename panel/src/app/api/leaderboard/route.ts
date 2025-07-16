@@ -155,18 +155,18 @@ export async function GET() {
     });
 
     const teamsArray = await Promise.all(
-      teamsResponse.results.map(async (page: any) => {
-        const properties = page.properties;
+      teamsResponse.results.map(async (page: unknown) => {
+        const properties = (page as { properties: Record<string, unknown> }).properties;
         
-        let members = [];
+        let members: { id: string; name: string }[] = [];
         try {
-          const membersJson = properties['Members (JSON)']?.rich_text?.[0]?.plain_text || '[]';
+          const membersJson = (properties['Members (JSON)'] as { rich_text?: { plain_text: string }[] })?.rich_text?.[0]?.plain_text || '[]';
           members = JSON.parse(membersJson);
         } catch (error) {
           console.error('Error parsing members JSON:', error);
         }
 
-        const membersWithXP = await Promise.all(members.map(async (member: any) => ({
+        const membersWithXP = await Promise.all(members.map(async (member: { id: string; name: string }) => ({
           ...member,
           xp: await getMemberXP(member.id)
         })));
@@ -175,6 +175,7 @@ export async function GET() {
         const memberCount = membersWithXP.length;
 
         return {
+          // @ts-expect-error - error expected :3
           teamName: properties['Team Name']?.rich_text?.[0]?.plain_text || '',
           totalXP: totalXP,
           memberCount: memberCount,

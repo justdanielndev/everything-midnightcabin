@@ -126,12 +126,12 @@ export function MobileMenu({ currentPage = 'dashboard' }: MobileMenuProps) {
                       </a>
                     )}
                     {settings.ProjectsEnabled && (
-                      <a href="/projects" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
+                      <Link href="/projects" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
                         isActive('projects') ? 'text-white' : 'text-zinc-400 hover:text-white'
                       }`} onClick={() => setIsOpen(false)}>
                         <FolderOpen className="w-6 h-6" />
                         <span>Projects</span>
-                      </a>
+                      </Link>
                     )}
                   </>
                 )}

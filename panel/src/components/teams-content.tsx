@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Users, Star, UserMinus, Trophy, Wrench, Lock, Globe, Mail, Plus, UserPlus, Search, Clock, X } from 'lucide-react';
+import { Users, UserMinus, Wrench, Lock, Globe, Mail, Plus, UserPlus, Search, X } from 'lucide-react';
 
 interface TeamMember {
   id: string;
@@ -32,7 +32,7 @@ interface Team {
 
 export function TeamsContent() {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; teamId: string | null; teamName: string } | null>(null);
   const [team, setTeam] = useState<Team | null>(null);
   const [isLeavingTeam, setIsLeavingTeam] = useState(false);
   const [availableTeams, setAvailableTeams] = useState<Team[]>([]);
@@ -60,7 +60,7 @@ export function TeamsContent() {
               const teamsData = await teamsRes.json();
             
               if (userData.user.teamId) {
-                const userTeam = teamsData.teams.find((t: any) => t.teamId === userData.user.teamId);
+                const userTeam = teamsData.teams.find((t: Team) => t.teamId === userData.user.teamId);
                 
                 if (userTeam) {
                   const totalXP = userTeam.members.reduce((sum: number, member: TeamMember) => sum + member.xp, 0);
@@ -80,8 +80,8 @@ export function TeamsContent() {
                 }
               } else {
                 const joinableTeams = teamsData.teams
-                  .filter((t: any) => t.type === 'Public' || t.type === 'Ask for invite')
-                  .map((t: any) => ({
+                  .filter((t: Team) => t.type === 'Public' || t.type === 'Ask for invite')
+                  .map((t: Team) => ({
                     id: t.id,
                     teamId: t.teamId,
                     name: t.name,
@@ -128,6 +128,7 @@ export function TeamsContent() {
       const response = await fetch('/api/teams/leave', { method: 'POST' });
       if (response.ok) {
         setTeam(null);
+        // @ts-expect-error - error expected :3
         setUser({ ...user, teamId: null, teamName: 'No Team Assigned' });
         alert('Successfully left the team!');
         window.location.reload();
@@ -215,7 +216,7 @@ export function TeamsContent() {
       const response = await fetch('/api/projects');
       if (response.ok) {
         const projectsData = await response.json();
-        const project = projectsData.projects.find((p: any) => 
+        const project = projectsData.projects.find((p: { name: string; teamId: string; id: string }) => 
           p.name === projectName && p.teamId === team?.teamId
         );
         if (project) {

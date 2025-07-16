@@ -5,7 +5,6 @@ const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
 
-const teamsDbId = process.env.NOTION_TEAMS_DB_ID!;
 const membersDbId = process.env.NOTION_MEMBERS_DB_ID!;
 
 async function getMemberXP(slackId: string): Promise<number> {
@@ -72,7 +71,7 @@ export async function GET() {
         console.error('Error parsing join requests JSON:', error);
       }
 
-      const membersWithXP = await Promise.all(members.map(async (member: any) => ({
+      const membersWithXP = await Promise.all(members.map(async (member: { id: string; name: string; slackName: string }) => ({
         ...member,
         xp: await getMemberXP(member.id)
       })));

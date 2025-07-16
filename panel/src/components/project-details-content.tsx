@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSettings } from '@/hooks/use-settings';
-import { FolderOpen, Calendar, Users, Clock, GitBranch, ArrowLeft, Edit, Save, X, FileText, Plus, Image } from 'lucide-react';
+import { FolderOpen, Calendar, Clock, GitBranch, ArrowLeft, Edit, Save, X, FileText, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 interface Devlog {
@@ -56,11 +56,7 @@ export function ProjectDetailsContent({ projectId }: ProjectDetailsContentProps)
   const [devlogImageUrl, setDevlogImageUrl] = useState('');
   const [addingDevlog, setAddingDevlog] = useState(false);
 
-  useEffect(() => {
-    fetchProject();
-  }, [projectId]);
-
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/projects/${projectId}`);
@@ -77,7 +73,11 @@ export function ProjectDetailsContent({ projectId }: ProjectDetailsContentProps)
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
+
+  useEffect(() => {
+    fetchProject();
+  }, [fetchProject]);
 
   const handleSave = async () => {
     if (!project) return;
@@ -106,7 +106,7 @@ export function ProjectDetailsContent({ projectId }: ProjectDetailsContentProps)
         const errorData = await response.json();
         setError(errorData.error || 'Failed to update project');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to update project');
     } finally {
       setSaving(false);
@@ -142,7 +142,7 @@ export function ProjectDetailsContent({ projectId }: ProjectDetailsContentProps)
         const errorData = await response.json();
         setError(errorData.error || 'Failed to add devlog');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to add devlog');
     } finally {
       setAddingDevlog(false);
@@ -177,7 +177,7 @@ export function ProjectDetailsContent({ projectId }: ProjectDetailsContentProps)
         const errorData = await response.json();
         setError(errorData.error || 'Failed to add Hackatime project');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to add Hackatime project');
     } finally {
       setAddingHackatimeProject(false);
@@ -216,7 +216,7 @@ export function ProjectDetailsContent({ projectId }: ProjectDetailsContentProps)
         const errorData = await response.json();
         setError(errorData.error || 'Failed to remove Hackatime project');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to remove Hackatime project');
     }
   };

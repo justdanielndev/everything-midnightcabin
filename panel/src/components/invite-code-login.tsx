@@ -32,7 +32,7 @@ export function InviteCodeLogin() {
         const data = await response.json();
         setError(data.error || 'Invalid invite code');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to validate invite code');
     } finally {
       setIsLoading(false);
@@ -44,7 +44,7 @@ export function InviteCodeLogin() {
       <div className="text-center">
         <div className="flex items-center justify-center mb-2">
           <Key className="h-5 w-5 text-zinc-400 mr-2" />
-          <span className="text-sm text-zinc-400">Have an invite code? (psst, use MIDNCBNDEMO!)</span>
+          <span className="text-sm text-zinc-400">Have an invite code?</span>
         </div>
       </div>
 

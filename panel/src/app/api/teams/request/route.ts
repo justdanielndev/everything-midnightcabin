@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     
     try {
       const currentJoinRequests = JSON.parse(currentJoinRequestsJson);
-      const existingRequest = currentJoinRequests.find((req: any) => req.id === slackUserId);
+      const existingRequest = currentJoinRequests.find((req: { id: string }) => req.id === slackUserId);
       if (existingRequest) {
         return NextResponse.json({ error: 'Join request already sent' }, { status: 400 });
       }

@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       slackName: userSlackName
     };
 
-    const teamResponse = await notion.pages.create({
+    await notion.pages.create({
       parent: { database_id: teamsDbId },
       properties: {
         'Team Name': {

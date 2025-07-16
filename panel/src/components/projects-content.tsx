@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSettings } from '@/hooks/use-settings';
-import { FolderOpen, Plus, Users, Calendar, AlertCircle, Folder, Search, X } from 'lucide-react';
+import { FolderOpen, Plus, Calendar, AlertCircle, Folder, Search, X } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -21,14 +21,13 @@ interface Team {
   teamId: string;
   name: string;
   projects: string[];
-  members: any[];
+  members: { id: string; name: string; slackName: string }[];
   type: string;
 }
 
 export function ProjectsContent() {
   const { settings } = useSettings();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userTeam, setUserTeam] = useState<Team | null>(null);
@@ -108,7 +107,7 @@ export function ProjectsContent() {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to create project');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to create project');
     } finally {
       setCreating(false);

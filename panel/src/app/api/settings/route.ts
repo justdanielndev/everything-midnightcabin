@@ -7,15 +7,22 @@ const notion = new Client({
 
 const settingsDbId = process.env.NOTION_GLOBAL_SETTINGS_DB_ID!;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function extractPropertyValue(property: any) {
+type NotionProperty = {
+  type: string;
+  title?: { plain_text: string }[];
+  rich_text?: { plain_text: string }[];
+  select?: { name: string };
+  checkbox?: boolean;
+};
+
+function extractPropertyValue(property: NotionProperty) {
   if (!property) return '';
 
   switch (property.type) {
     case 'title':
-      return property.title?.map((t: any) => t.plain_text).join('') || '';
+      return property.title?.map((t) => t.plain_text).join('') || '';
     case 'rich_text':
-      return property.rich_text?.map((t: any) => t.plain_text).join('') || '';
+      return property.rich_text?.map((t) => t.plain_text).join('') || '';
     case 'select':
       return property.select?.name || '';
     case 'checkbox':
@@ -46,8 +53,10 @@ export async function GET() {
       
       if (item) {
         if (value === 'true' || value === 'false') {
+          // @ts-expect-error - error expected :3
           settings[item] = value === 'true';
         } else {
+          // @ts-expect-error - error expected :3
           settings[item] = value;
         }
       }

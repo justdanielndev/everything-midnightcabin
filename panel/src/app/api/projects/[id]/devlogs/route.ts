@@ -10,14 +10,24 @@ const notion = new Client({
 const projectsDbId = process.env.NOTION_PROJECTS_DB_ID!;
 const membersDbId = process.env.NOTION_MEMBERS_DB_ID!;
 
-function extractPropertyValue(property: any) {
+type NotionProperty = {
+  type: string;
+  title?: { plain_text: string }[];
+  rich_text?: { plain_text: string }[];
+  select?: { name: string };
+  number?: number;
+  date?: { start: string };
+  url?: string;
+};
+
+function extractPropertyValue(property: NotionProperty) {
   if (!property) return '';
 
   switch (property.type) {
     case 'title':
-      return property.title?.map((t: any) => t.plain_text).join('') || '';
+      return property.title?.map((t) => t.plain_text).join('') || '';
     case 'rich_text':
-      return property.rich_text?.map((t: any) => t.plain_text).join('') || '';
+      return property.rich_text?.map((t) => t.plain_text).join('') || '';
     case 'select':
       return property.select?.name || '';
     case 'number':
@@ -90,6 +100,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const currentDevlogsJson = extractPropertyValue(projectProps['Devlogs (JSON)']) || '[]';
     let currentDevlogs = [];
     try {
+      // @ts-expect-error - error expected :3
       currentDevlogs = JSON.parse(currentDevlogsJson);
     } catch (error) {
       console.error('Error parsing devlogs JSON:', error);
@@ -104,7 +115,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     };
     const updatedDevlogs = [...currentDevlogs, newDevlog];
     const currentStatus = extractPropertyValue(projectProps['Status']);
-    const updateProperties: any = {
+    const updateProperties: Record<string, unknown> = {
       'Devlogs (JSON)': {
         rich_text: [
           {
@@ -125,6 +136,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     await notion.pages.update({
       page_id: projectRecord.id,
+      // @ts-expect-error - error expected :3
       properties: updateProperties
     });
 

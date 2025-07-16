@@ -3,12 +3,14 @@ import { ProjectDetailsContent } from '@/components/project-details-content';
 import { SettingsGuard } from '@/components/settings-guard';
 
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function ProjectPage({ params }: ProjectPageProps) {
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { id } = await params;
+  
   return (
     <SettingsGuard requiredSetting="ProjectsEnabled">
       <div className="min-h-screen bg-zinc-950">
@@ -17,7 +19,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
         <div className="relative z-10">
           <TopNav currentPage="projects" />
           <div className="container mx-auto px-6 -mt-16">
-            <ProjectDetailsContent projectId={params.id} />
+            <ProjectDetailsContent projectId={id} />
           </div>
         </div>
       </div>

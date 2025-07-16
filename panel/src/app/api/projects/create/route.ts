@@ -74,7 +74,7 @@ export async function POST(request: Request) {
 
     const projectId = uuidv4();
     
-    const projectResponse = await notion.pages.create({
+    await notion.pages.create({
       parent: { database_id: projectsDbId },
       properties: {
         'Name': {

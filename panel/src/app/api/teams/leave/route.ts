@@ -66,7 +66,7 @@ export async function POST() {
       
       try {
         const currentMembers = JSON.parse(currentMembersJson);
-        const updatedMembers = currentMembers.filter((member: any) => member.id !== slackUserId);
+        const updatedMembers = currentMembers.filter((member: { id: string }) => member.id !== slackUserId);
         if (updatedMembers.length === 0) {
           await notion.blocks.delete({
             block_id: teamRecord.id
