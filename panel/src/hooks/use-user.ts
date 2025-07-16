@@ -22,8 +22,8 @@ export function useUser(): User | null {
       })
       .then(data => {
         if (data.authenticated && data.user) {
-          if (!data.user.id || !data.user.email) {
-            console.error('Missing required user data (ID or email) from Slack/Notion, logging out');
+          if (!data.user.id) {
+            console.error('Missing required user data (ID) from Slack/Notion, logging out');
             document.cookie = 'slack_user_id=; Max-Age=0; path=/';
             if (window.location.pathname !== '/') {
               window.location.href = '/';

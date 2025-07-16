@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, Home, Newspaper, Calendar, User, Trophy, ShoppingBag } from 'lucide-react';
+import { Menu, X, Home, Newspaper, Calendar, User, Trophy, ShoppingBag, Users, FolderOpen } from 'lucide-react';
 import { SignOutButton } from './signout-button';
 import { useSettings } from '@/hooks/use-settings';
 import Link from 'next/link';
 
 interface MobileMenuProps {
-  currentPage?: 'dashboard' | 'news' | 'events' | 'store' | 'profile' | 'leaderboard';
+  currentPage?: 'dashboard' | 'news' | 'events' | 'store' | 'profile' | 'leaderboard' | 'teams' | 'projects';
 }
 
 export function MobileMenu({ currentPage = 'dashboard' }: MobileMenuProps) {
@@ -115,6 +115,22 @@ export function MobileMenu({ currentPage = 'dashboard' }: MobileMenuProps) {
                       }`} onClick={() => setIsOpen(false)}>
                         <Trophy className="w-6 h-6" />
                         <span>Leaderboard</span>
+                      </a>
+                    )}
+                    {settings.TeamsEnabled && (
+                      <a href="/teams" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
+                        isActive('teams') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                      }`} onClick={() => setIsOpen(false)}>
+                        <Users className="w-6 h-6" />
+                        <span>Teams</span>
+                      </a>
+                    )}
+                    {settings.ProjectsEnabled && (
+                      <a href="/projects" className={`flex items-center justify-center space-x-4 font-medium hover:text-[#7d82b8] transition-colors py-6 text-xl ${
+                        isActive('projects') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                      }`} onClick={() => setIsOpen(false)}>
+                        <FolderOpen className="w-6 h-6" />
+                        <span>Projects</span>
                       </a>
                     )}
                   </>

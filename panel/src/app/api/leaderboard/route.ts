@@ -94,6 +94,30 @@ async function getTeamNameById(teamId: string) {
   }
 }
 
+async function getMemberXP(slackId: string): Promise<number> {
+  try {
+    const response = await notion.databases.query({
+      database_id: membersDbId,
+      filter: {
+        property: 'Slack ID',
+        rich_text: {
+          equals: slackId
+        }
+      }
+    });
+    
+    if (response.results.length > 0) {
+      const member = response.results[0];
+      // @ts-expect-error - error expected :3
+      return member.properties['Experience Points']?.number || 0;
+    }
+    return 0;
+  } catch (error) {
+    console.error('Error fetching member XP:', error);
+    return 0;
+  }
+}
+
 export async function GET() {
   try {
     const members = await queryNotionDatabase(membersDbId);
@@ -126,41 +150,41 @@ export async function GET() {
         rank: index + 1
       }));
 
-    const teamStats = new Map<string, {
-      teamName: string;
-      totalXP: number;
-      memberCount: number;
-      members: typeof activeUsers;
-    }>();
-
-    activeUsers.forEach(user => {
-      if (user.teamName && user.teamName !== 'No Team Assigned') {
-        // @ts-expect-error - error expected :3
-        if (!teamStats.has(user.teamName)) {
-          // @ts-expect-error - error expected :3
-          teamStats.set(user.teamName, {
-            teamName: user.teamName,
-            totalXP: 0,
-            memberCount: 0,
-            members: []
-          });
-        }
-        
-        // @ts-expect-error - error expected :3
-        const team = teamStats.get(user.teamName)!;
-        team.totalXP += user.xp;
-        team.memberCount++;
-        team.members.push(user);
-      }
+    const teamsResponse = await notion.databases.query({
+      database_id: teamsDbId,
     });
 
-    const teamsArray = Array.from(teamStats.values())
-      .map(team => ({
-        teamName: team.teamName,
-        totalXP: team.totalXP,
-        memberCount: team.memberCount,
-        averageXP: Math.round(team.totalXP / team.memberCount)
-      }))
+    const teamsArray = await Promise.all(
+      teamsResponse.results.map(async (page: any) => {
+        const properties = page.properties;
+        
+        let members = [];
+        try {
+          const membersJson = properties['Members (JSON)']?.rich_text?.[0]?.plain_text || '[]';
+          members = JSON.parse(membersJson);
+        } catch (error) {
+          console.error('Error parsing members JSON:', error);
+        }
+
+        const membersWithXP = await Promise.all(members.map(async (member: any) => ({
+          ...member,
+          xp: await getMemberXP(member.id)
+        })));
+
+        const totalXP = membersWithXP.reduce((sum, member) => sum + member.xp, 0);
+        const memberCount = membersWithXP.length;
+
+        return {
+          teamName: properties['Team Name']?.rich_text?.[0]?.plain_text || '',
+          totalXP: totalXP,
+          memberCount: memberCount,
+          averageXP: memberCount > 0 ? Math.round(totalXP / memberCount) : 0
+        };
+      })
+    );
+
+    const sortedTeams = teamsArray
+      .filter(team => team.teamName && team.memberCount > 0)
       .sort((a, b) => b.totalXP - a.totalXP)
       .map((team, index) => ({
         ...team,
@@ -169,7 +193,7 @@ export async function GET() {
 
     return NextResponse.json({
       users: activeUsers.slice(0, 100),
-      teams: teamsArray
+      teams: sortedTeams
     });
 
   } catch (error) {

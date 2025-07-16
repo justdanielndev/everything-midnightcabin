@@ -2,12 +2,12 @@
 
 import { SignOutButton } from '@/components/signout-button';
 import { MobileMenu } from '@/components/mobile-menu';
-import { Home, Newspaper, Calendar, User, Trophy, ShoppingBag } from 'lucide-react';
+import { Home, Newspaper, Calendar, User, Trophy, ShoppingBag, Users, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useSettings } from '@/hooks/use-settings';
 
 interface TopNavProps {
-  currentPage?: 'dashboard' | 'news' | 'events' | 'store' | 'profile' | 'leaderboard';
+  currentPage?: 'dashboard' | 'news' | 'events' | 'store' | 'profile' | 'leaderboard' | 'teams' | 'projects';
 }
 
 export function TopNav({ currentPage = 'dashboard' }: TopNavProps) {
@@ -104,6 +104,28 @@ export function TopNav({ currentPage = 'dashboard' }: TopNavProps) {
                   >
                     <Trophy className="w-4 h-4" />
                     <span>Leaderboard</span>
+                  </a>
+                )}
+                {settings.TeamsEnabled && (
+                  <a 
+                    href="/teams" 
+                    className={`flex items-center space-x-2 font-medium transition-colors ${
+                      isActive('teams') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <Users className="w-4 h-4" />
+                    <span>Teams</span>
+                  </a>
+                )}
+                {settings.ProjectsEnabled && (
+                  <a 
+                    href="/projects" 
+                    className={`flex items-center space-x-2 font-medium transition-colors ${
+                      isActive('projects') ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <FolderOpen className="w-4 h-4" />
+                    <span>Projects</span>
                   </a>
                 )}
               </>

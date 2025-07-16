@@ -33,15 +33,17 @@ export function DashboardContent() {
   const [hackathonData, setHackathonData] = useState<{ [key: string]: string } | null>(null);
   const [timeLeft, setTimeLeft] = useState('');
   const [userXP, setUserXP] = useState<number>(0);
+  const [settings, setSettings] = useState<{ [key: string]: string | boolean } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [newsRes, eventsRes, dataRes, userRes] = await Promise.all([
+        const [newsRes, eventsRes, dataRes, userRes, settingsRes] = await Promise.all([
           fetch('/api/news'),
           fetch('/api/events'),
           fetch('/data.json'),
-          fetch('/api/user/me')
+          fetch('/api/user/me'),
+          fetch('/api/settings')
         ]);
 
         if (newsRes.ok) {
@@ -65,6 +67,11 @@ export function DashboardContent() {
             setUserXP(userData.user.xp || 0);
           }
         }
+
+        if (settingsRes.ok) {
+          const settingsData = await settingsRes.json();
+          setSettings(settingsData.settings || {});
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -87,33 +94,55 @@ export function DashboardContent() {
   };
 
   useEffect(() => {
-    if (hackathonData) {
+    if (hackathonData && settings) {
       const updateTimer = () => {
         const now = new Date().getTime();
-        const endTime = new Date(hackathonData['end-date-and-time']).getTime();
-        const difference = endTime - now;
-
-        if (difference > 0) {
-          const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const timeUntilStartEnabled = settings.timeUntilStartEnabled === true;
+        
+        if (timeUntilStartEnabled) {
+          const startTime = new Date(hackathonData['start-date-and-time']).getTime();
+          const difference = startTime - now;
           
-          if (days > 0) {
-            setTimeLeft(`${days}d ${hours}h ${minutes}m`);
+          if (difference > 0) {
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (days > 0) {
+              setTimeLeft(`${days}d ${hours}h ${minutes}m`);
+            } else {
+              setTimeLeft(`${hours}h ${minutes}m`);
+            }
           } else {
-            setTimeLeft(`${hours}h ${minutes}m`);
+            setTimeLeft('Event started');
           }
         } else {
-          setTimeLeft('Event ended');
+          const endTime = new Date(hackathonData['end-date-and-time']).getTime();
+          const difference = endTime - now;
+
+          if (difference > 0) {
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            
+            if (days > 0) {
+              setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+            } else {
+              setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+            }
+          } else {
+            setTimeLeft('Event ended');
+          }
         }
       };
 
       updateTimer();
-      const interval = setInterval(updateTimer, 60000);
+      const interval = setInterval(updateTimer, 1000);
       
       return () => clearInterval(interval);
     }
-  }, [hackathonData]);
+  }, [hackathonData, settings]);
 
   const getUpcomingEvents = () => {
     if (!hackathonData) return events.slice(0, 2);
@@ -190,7 +219,9 @@ export function DashboardContent() {
               </div>
               <div>
                 <p className="text-white font-semibold text-lg cursor-default">{timeLeft || '0h 0m'}</p>
-                <p className="text-zinc-400 text-sm cursor-default">Time Left</p>
+                <p className="text-zinc-400 text-sm cursor-default">
+                  {settings?.timeUntilStartEnabled ? 'Time Until Beginning' : 'Time Left'}
+                </p>
               </div>
             </div>
           </div>
@@ -202,91 +233,97 @@ export function DashboardContent() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800/50 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="flex items-center justify-center w-8 h-8 bg-[#7d82b8]/10 rounded-lg">
-              <Newspaper className="w-4 h-4 text-[#7d82b8]" />
-            </div>
-            <h3 className="text-lg font-semibold text-white cursor-default">Latest News</h3>
-          </div>
-          <div className="space-y-4">
-            {news.length > 0 ? (
-              news.slice(0, 3).map((item) => (
-                <a key={item.id} href={`/news/${item.id}`} className="block">
-                  <div className="p-4 bg-zinc-800/30 rounded-xl border border-zinc-700/30 hover:border-[#7d82b8]/30 hover:bg-[#7d82b8]/5 transition-all cursor-pointer">
-                    <h4 className="text-white font-medium mb-2 hover:text-[#7d82b8] transition-colors">{item.name}</h4>
-                    <p className="text-zinc-400 text-sm mb-2 line-clamp-2">{item.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-[#7d82b8]">by {item.author}</span>
-                      <span className="text-xs text-zinc-500">{formatTimeAgo(item.publicationDate)}</span>
-                    </div>
-                  </div>
-                </a>
-              ))
-            ) : (
-              <div className="text-center py-8 text-zinc-400">
-                <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No news available</p>
+      <div className={`grid grid-cols-1 gap-6 ${
+        settings?.NewsEnabled && settings?.EventsEnabled ? 'lg:grid-cols-2' : 'lg:grid-cols-1'
+      }`}>
+        {settings?.NewsEnabled && (
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800/50 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="flex items-center justify-center w-8 h-8 bg-[#7d82b8]/10 rounded-lg">
+                <Newspaper className="w-4 h-4 text-[#7d82b8]" />
               </div>
-            )}
-          </div>
-          <div className="mt-4 text-center">
-            <Link href="/news" className="text-[#7d82b8] hover:text-[#7d82b8]/80 text-sm font-medium transition-colors">
-              See more →
-            </Link>
-          </div>
-        </div>
-        
-        <div className="bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800/50 p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="flex items-center justify-center w-8 h-8 bg-[#7d82b8]/10 rounded-lg">
-              <Calendar className="w-4 h-4 text-[#7d82b8]" />
+              <h3 className="text-lg font-semibold text-white cursor-default">Latest News</h3>
             </div>
-            <h3 className="text-lg font-semibold text-white cursor-default">Upcoming Events</h3>
+            <div className="space-y-4">
+              {news.length > 0 ? (
+                news.slice(0, 3).map((item) => (
+                  <a key={item.id} href={`/news/${item.id}`} className="block">
+                    <div className="p-4 bg-zinc-800/30 rounded-xl border border-zinc-700/30 hover:border-[#7d82b8]/30 hover:bg-[#7d82b8]/5 transition-all cursor-pointer">
+                      <h4 className="text-white font-medium mb-2 hover:text-[#7d82b8] transition-colors">{item.name}</h4>
+                      <p className="text-zinc-400 text-sm mb-2 line-clamp-2">{item.description}</p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-[#7d82b8]">by {item.author}</span>
+                        <span className="text-xs text-zinc-500">{formatTimeAgo(item.publicationDate)}</span>
+                      </div>
+                    </div>
+                  </a>
+                ))
+              ) : (
+                <div className="text-center py-8 text-zinc-400">
+                  <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No news available</p>
+                </div>
+              )}
+            </div>
+            <div className="mt-4 text-center">
+              <Link href="/news" className="text-[#7d82b8] hover:text-[#7d82b8]/80 text-sm font-medium transition-colors">
+                See more →
+              </Link>
+            </div>
           </div>
-          <div className="space-y-4">
-            {events.length > 0 ? (
-              getUpcomingEvents().map((event) => (
-                <a key={event.id} href={`/events/${event.id}`} className="block">
-                  <div className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-xl border border-zinc-700/30 hover:border-[#7d82b8]/30 hover:bg-[#7d82b8]/5 transition-all cursor-pointer">
-                    <div>
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h4 className="text-white font-medium hover:text-[#7d82b8] transition-colors">{event.name}</h4>
-                        {event.isMainEvent && (
-                          <span className="px-2 py-1 bg-[#7d82b8]/20 text-[#7d82b8] text-xs rounded-full">
-                            Main Event
-                          </span>
+        )}
+        
+        {settings?.EventsEnabled && (
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-2xl border border-zinc-800/50 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="flex items-center justify-center w-8 h-8 bg-[#7d82b8]/10 rounded-lg">
+                <Calendar className="w-4 h-4 text-[#7d82b8]" />
+              </div>
+              <h3 className="text-lg font-semibold text-white cursor-default">Upcoming Events</h3>
+            </div>
+            <div className="space-y-4">
+              {events.length > 0 ? (
+                getUpcomingEvents().map((event) => (
+                  <a key={event.id} href={`/events/${event.id}`} className="block">
+                    <div className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-xl border border-zinc-700/30 hover:border-[#7d82b8]/30 hover:bg-[#7d82b8]/5 transition-all cursor-pointer">
+                      <div>
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h4 className="text-white font-medium hover:text-[#7d82b8] transition-colors">{event.name}</h4>
+                          {event.isMainEvent && (
+                            <span className="px-2 py-1 bg-[#7d82b8]/20 text-[#7d82b8] text-xs rounded-full">
+                              Main Event
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-zinc-400 text-sm">{event.location}</p>
+                        {event.isStoreUnlockable && (
+                          <p className="text-amber-400 text-xs mt-1">🛒 {event.xpToBuy} XP required</p>
+                        )}
+                        {event.hasLimitedAttendees && (
+                          <p className="text-orange-400 text-xs mt-1">👥 Limited to {event.maxAttendees} attendees</p>
                         )}
                       </div>
-                      <p className="text-zinc-400 text-sm">{event.location}</p>
-                      {event.isStoreUnlockable && (
-                        <p className="text-amber-400 text-xs mt-1">🛒 {event.xpToBuy} XP required</p>
-                      )}
-                      {event.hasLimitedAttendees && (
-                        <p className="text-orange-400 text-xs mt-1">👥 Limited to {event.maxAttendees} attendees</p>
-                      )}
+                      <div className="text-right">
+                        <p className="text-[#7d82b8] font-medium text-sm">{event.dayOfWeek}</p>
+                        <p className="text-zinc-400 text-xs">{event.hour}</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-[#7d82b8] font-medium text-sm">{event.dayOfWeek}</p>
-                      <p className="text-zinc-400 text-xs">{event.hour}</p>
-                    </div>
-                  </div>
-                </a>
-              ))
-            ) : (
-              <div className="text-center py-8 text-zinc-400">
-                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No events scheduled</p>
-              </div>
-            )}
+                  </a>
+                ))
+              ) : (
+                <div className="text-center py-8 text-zinc-400">
+                  <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No events scheduled</p>
+                </div>
+              )}
+            </div>
+            <div className="mt-4 text-center">
+              <Link href="/events" className="text-[#7d82b8] hover:text-[#7d82b8]/80 text-sm font-medium transition-colors">
+                See more →
+              </Link>
+            </div>
           </div>
-          <div className="mt-4 text-center">
-            <Link href="/events" className="text-[#7d82b8] hover:text-[#7d82b8]/80 text-sm font-medium transition-colors">
-              See more →
-            </Link>
-          </div>
-        </div>
+        )}
       </div>
     </>
   );

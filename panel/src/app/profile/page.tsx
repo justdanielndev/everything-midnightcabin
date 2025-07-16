@@ -155,6 +155,14 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="flex items-center space-x-3 p-4 bg-zinc-800/30 rounded-xl">
+                    <User className="w-6 h-6 text-[#7d82b8]" />
+                    <div className="flex-1">
+                      <p className="text-white font-medium cursor-default">@{user.slackName}</p>
+                      <p className="text-zinc-400 text-sm cursor-default">Slack Username</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3 p-4 bg-zinc-800/30 rounded-xl">
                     <Users className="w-6 h-6 text-[#7d82b8]" />
                     <div className="flex-1">
                       <p className="text-white font-medium cursor-default">{getTeamName(user.teamName)}</p>
