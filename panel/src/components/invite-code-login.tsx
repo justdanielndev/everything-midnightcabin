@@ -44,7 +44,7 @@ export function InviteCodeLogin() {
       <div className="text-center">
         <div className="flex items-center justify-center mb-2">
           <Key className="h-5 w-5 text-zinc-400 mr-2" />
-          <span className="text-sm text-zinc-400">Tip: use code MIDNCBNDEMO!</span>
+          <span className="text-sm text-zinc-400">Use code MIDNCBNDEMO if accessing demo for SoM!</span>
         </div>
       </div>
 
@@ -54,7 +54,7 @@ export function InviteCodeLogin() {
             type="text"
             value={inviteCode}
             onChange={(e) => setInviteCode(e.target.value)}
-            placeholder="Enter invite code"
+            placeholder="Enter demo invite code"
             className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700/50 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent"
             disabled={isLoading}
           />
